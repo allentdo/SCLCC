@@ -18,7 +18,7 @@ import java.util.HashMap;
 /**
  * Created by WangHong on 2017/11/19.
  */
-public class LocalClassifieChain extends TransformationBasedMultiLabelLearner{
+public class LocalClassifieChainOnlyPredict extends TransformationBasedMultiLabelLearner{
     /**
      * The new chain ordering of the label indices
      */
@@ -31,90 +31,20 @@ public class LocalClassifieChain extends TransformationBasedMultiLabelLearner{
      */
     protected FilteredClassifier[] ensemble;
 
-    /**
-     * Creates a new instance using J48 as the underlying classifier
-     */
-    public LocalClassifieChain() {
-        super(new J48());
-    }
 
-    /**
-     * Creates a new instance
-     *
-     * @param classifier the base-level classification algorithm that will be
-     * used for training each of the binary models
-     * @param aChain contains the order of the label indexes [0..numLabels-1]
-     */
-    public LocalClassifieChain(Classifier classifier, int[] aChain) {
-        super(classifier);
+
+    public LocalClassifieChainOnlyPredict(int[] aChain) {
         chain = aChain;
     }
 
+    public void setEnsemble(FilteredClassifier[] ens){
+        this.ensemble = ens;
 
-    /**
-     * Creates a new instance
-     *
-     * @param classifier the base-level classification algorithm that will be
-     * used for training each of the binary models
-     */
-    public LocalClassifieChain(Classifier classifier) {
-        super(classifier);
     }
 
+
     protected void buildInternal(MultiLabelInstances train) throws Exception {
-        //默认按照自然顺序初始化链
-        if (chain == null) {
-            chain = new int[numLabels];
-            for (int i = 0; i < numLabels; i++) {
-                chain[i] = i;
-            }
-        }
 
-        Instances trainDataset;
-        numLabels = train.getNumLabels();
-        //长度需要修改，改为chain.length！！
-//        ensemble = new FilteredClassifier[numLabels];
-        ensemble = new FilteredClassifier[chain.length];
-        trainDataset = train.getDataSet();
-
-        //循环结束条件需要修改 改为i<chain.length！！
-        for (int i = 0; i < chain.length; i++) {
-            ensemble[i] = new FilteredClassifier();
-            ensemble[i].setClassifier(AbstractClassifier.makeCopy(baseClassifier));
-
-            // Indices of attributes to remove first removes numLabels attributes
-            // the numLabels - 1 attributes and so on.
-            // The loop starts from the last attribute.
-            int[] indicesToRemove = new int[numLabels - 1 - i];
-            //得到分类器链和整体标签的差集，预先加入indicesToRemove中
-            HashMap<Integer,Integer> mapAll = new HashMap<>();
-            for (int j = 0; j < chain.length; j++) {
-                mapAll.put(chain[j],1);
-            }
-            int n = 0;
-            for (int j = 0; j < numLabels; j++) {
-                if(!mapAll.containsKey(j)){
-                    indicesToRemove[n]=labelIndices[j];
-                    n++;
-                }
-            }
-
-            int counter2 = numLabels-chain.length;
-            for (int counter1 = n; counter1 < numLabels - i - 1; counter1++) {
-                indicesToRemove[counter1] = labelIndices[chain[numLabels - 1 - counter2]];
-                counter2++;
-            }
-
-            Remove remove = new Remove();
-            remove.setAttributeIndicesArray(indicesToRemove);
-            remove.setInputFormat(trainDataset);
-            remove.setInvertSelection(false);
-            ensemble[i].setFilter(remove);
-
-            trainDataset.setClassIndex(labelIndices[chain[i]]);
-            debug("Bulding model " + (i + 1) + "/" + numLabels);
-            ensemble[i].buildClassifier(trainDataset);
-        }
     }
 
     protected MultiLabelOutput makePredictionInternal(Instance instance) throws Exception {

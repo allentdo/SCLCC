@@ -2,11 +2,13 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.mllib.clustering.{KMeans, KMeansModel}
 import org.apache.spark.mllib.linalg.Vectors
 
+
 /**
   * Created by WangHong on 2017/11/17.
   */
 object TestCluter {
   def main(args: Array[String]): Unit = {
+
     val spark = SparkSession.builder().appName(this.getClass.getSimpleName).master("local[2]").getOrCreate
     val sc = spark.sparkContext
     // Load and parse the data

@@ -433,7 +433,7 @@ public class ClusterLocalClassifierChains extends TransformationBasedMultiLabelL
      * @return
      * @throws IllegalArgumentException
      */
-    private int[][] kModesCossimil(int[][] ins,int k,int inum,double maxc) throws Exception{
+    public int[][] kModesCossimil(int[][] ins,int k,int inum,double maxc) throws Exception{
         //数据检查
         if(ins.length<k || k<1) throw new IllegalArgumentException("聚类类簇数大于距离数");
         if(inum<1 && maxc<0.1) throw new IllegalArgumentException("聚类条件输入错误");

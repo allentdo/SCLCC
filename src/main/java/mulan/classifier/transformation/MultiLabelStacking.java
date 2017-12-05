@@ -524,7 +524,7 @@ public class MultiLabelStacking extends TransformationBasedMultiLabelLearner {
 
             }
         }
-        // System.out.println(Utils.arrayToString(confidences));
+        // System.out.println(wh.Utils.arrayToString(confidences));
         /*
          * creation of the meta-instance with the appropriate values
          */
